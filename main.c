@@ -57,6 +57,13 @@ typedef struct CtfHandler
 	int offset;
 } CtfHandler;
 
+typedef struct CtfHeader
+{
+	char name[64];
+	unsigned int start;
+	unsigned int size;
+} __attribute__((packed)) CtfHeader;
+
 static unsigned int cxmb_magic;
 static unsigned int ctf_sig = 0;
 static unsigned int header_size = 0;
