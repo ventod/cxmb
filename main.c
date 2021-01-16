@@ -150,7 +150,7 @@ int msIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 			if (magic != cxmb_magic)
 			{
 				int fw = initPatches();
-				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))) && !endwithistr(file, "random.ctf"))
+				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))))
 				{
 					log("%s version not match!\n", selected_theme_file);
 					ret = -1;
@@ -214,7 +214,7 @@ int efIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 			if (magic != cxmb_magic)
 			{
 				int fw = initPatches();
-				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))) && !endwithistr(file, "random.ctf"))
+				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))))
 				{
 					log("%s version not match!\n", selected_theme_file);
 					ret = -1;
@@ -580,55 +580,6 @@ int OnModuleStart(tSceModule *mod)
 	return previous(mod);
 }
 
-int randomCtf(char *theme)
-{
-	int dfd = sceIoDopen("ms0:/PSP/THEME");
-	if (dfd < 0)
-		return -1;
-
-	int th_count = 0;
-	SceIoDirent ent;
-	memset(&ent, 0, sizeof(SceIoDirent));
-	while (sceIoDread(dfd, &ent) > 0)
-	{
-		if (!(ent.d_stat.st_attr & FIO_SO_IFDIR) && ent.d_name[0] != '.' && cmpistr(ent.d_name, "random.ctf") && endwithistr(ent.d_name, ".ctf"))
-		{
-			th_count++;
-		}
-		log("name %s %d\n", ent.d_name, th_count);
-		memset(&ent, 0, sizeof(SceIoDirent));
-	}
-	sceIoDclose(dfd);
-	if (th_count <= 0)
-		return -1;
-	if (th_count > 1)
-	{
-		time_t tm = sceKernelLibcTime(NULL);
-		th_count = tm % th_count;
-	}
-	else
-		th_count = 0;
-	dfd = sceIoDopen("ms0:/PSP/THEME");
-	memset(&ent, 0, sizeof(SceIoDirent));
-	while (sceIoDread(dfd, &ent) > 0)
-	{
-		log("name %s %d\n", ent.d_name, th_count);
-		if (!(ent.d_stat.st_attr & FIO_SO_IFDIR) && ent.d_name[0] != '.' && cmpistr(ent.d_name, "random.ctf") && endwithistr(ent.d_name, "ctf"))
-		{
-			if (th_count == 0)
-			{
-				sprintf(theme, "/PSP/THEME/%s", ent.d_name);
-				break;
-			}
-			else
-				th_count--;
-		}
-		memset(&ent, 0, sizeof(SceIoDirent));
-	}
-	sceIoDclose(dfd);
-	return 0;
-}
-
 int install_cxmb(void)
 {
 	log("Going to install cxmb!\n");
@@ -715,12 +666,6 @@ int install_cxmb(void)
 		}
 	}
 	sceIoClose(fd);
-
-	if (endwithistr(theme_file, "random.ctf"))
-	{
-		log("random\n");
-		randomCtf(theme_file);
-	}
 
 	sprintf(cxmb_theme_file, "%s:%s", ctf_drive, theme_file);
 	log("Theme file: %s\n", cxmb_theme_file);
