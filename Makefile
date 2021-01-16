@@ -40,7 +40,7 @@ PRX_EXPORTS		= exports.exp
 INCDIR			= inc_lib
 LIBDIR			= inc_lib
 
-LDFLAGS			= -mno-crt0 -nostartfiles
+LDFLAGS			= -nostartfiles
 LIBS			= -lpspsystemctrl_kernel
 CFLAGS			= -Os -G0 -Wall -fno-strict-aliasing -fno-builtin-printf
 CXXFLAGS		= $(CFLAGS) -fno-exceptions -fno-rtti
