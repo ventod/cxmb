@@ -8,11 +8,11 @@
 
 enum BootLoadFlags
 {
-	BOOTLOAD_VSH = 1,
-	BOOTLOAD_GAME = 2,
-	BOOTLOAD_UPDATER = 4,
-	BOOTLOAD_POPS = 8,
-	BOOTLOAD_UMDEMU = 64, /* for original NP9660 */
+  BOOTLOAD_VSH = 1,
+  BOOTLOAD_GAME = 2,
+  BOOTLOAD_UPDATER = 4,
+  BOOTLOAD_POPS = 8,
+  BOOTLOAD_UMDEMU = 64, /* for original NP9660 */
 };
 
 /**
@@ -92,7 +92,6 @@ int sctrlKernelLoadExecVSHMs3(const char *file, struct SceKernelLoadExecVSHParam
 */
 int sctrlKernelLoadExecVSHMs4(const char *file, struct SceKernelLoadExecVSHParam *param);
 
-
 /**
  * Executes a new executable with the specified apitype
  *
@@ -154,7 +153,7 @@ int sctrlKernelSetDevkitVersion(int version);
  * @returns 1 if we are in SE-C or later, 0 if we are in HEN-D or later,
  * and < 0 (a kernel error code) in any other case
 */
-int	sctrlHENIsSE();
+int sctrlHENIsSE();
 
 /**
  * Checks if we are in Devhook.
@@ -162,7 +161,7 @@ int	sctrlHENIsSE();
  * @returns 1 if we are in SE-C/HEN-D for devhook  or later, 0 if we are in normal SE-C/HEN-D or later,
  * and < 0 (a kernel error code) in any other case
 */
-int	sctrlHENIsDevhook();
+int sctrlHENIsDevhook();
 
 /**
  * Gets the HEN version
@@ -202,35 +201,36 @@ PspIoDrv *sctrlHENFindDriver(char *drvname);
 */
 u32 sctrlHENFindFunction(char *modname, char *libname, u32 nid);
 
-typedef struct SceModule2 {
-    struct SceModule2   *next;
-    unsigned short      attribute;
-    unsigned char       version[2];
-    char                modname[27];
-    char                terminal;
-    unsigned int        unknown1;
-    unsigned int        unknown2;
-    SceUID              modid;
-    unsigned int        unknown3[2];
-    u32         mpid_text;  // 0x38
-    u32         mpid_data; // 0x3C
-    void *              ent_top;
-    unsigned int        ent_size;
-    void *              stub_top;
-    unsigned int        stub_size;
-    unsigned int        unknown4[5];
-    unsigned int        entry_addr;
-    unsigned int        gp_value;
-    unsigned int        text_addr;
-    unsigned int        text_size;
-    unsigned int        data_size;
-    unsigned int        bss_size;
-    unsigned int        nsegment;
-    unsigned int        segmentaddr[4];
-    unsigned int        segmentsize[4];
+typedef struct SceModule2
+{
+  struct SceModule2 *next;
+  unsigned short attribute;
+  unsigned char version[2];
+  char modname[27];
+  char terminal;
+  unsigned int unknown1;
+  unsigned int unknown2;
+  SceUID modid;
+  unsigned int unknown3[2];
+  u32 mpid_text; // 0x38
+  u32 mpid_data; // 0x3C
+  void *ent_top;
+  unsigned int ent_size;
+  void *stub_top;
+  unsigned int stub_size;
+  unsigned int unknown4[5];
+  unsigned int entry_addr;
+  unsigned int gp_value;
+  unsigned int text_addr;
+  unsigned int text_size;
+  unsigned int data_size;
+  unsigned int bss_size;
+  unsigned int nsegment;
+  unsigned int segmentaddr[4];
+  unsigned int segmentsize[4];
 } SceModule2;
 
-typedef int (* STMOD_HANDLER)(SceModule2 *);
+typedef int (*STMOD_HANDLER)(SceModule2 *);
 
 /**
  * Sets a function to be called just before module_start of a module is gonna be called (useful for patching purposes)
@@ -273,8 +273,8 @@ typedef int (* STMOD_HANDLER)(SceModule2 *);
 */
 STMOD_HANDLER sctrlHENSetStartModuleHandler(STMOD_HANDLER handler);
 
-typedef int (* KDEC_HANDLER)(u32 *buf, int size, int *retSize, int m);
-typedef int (* MDEC_HANDLER)(u32 *tag, u8 *keys, u32 code, u32 *buf, int size, int *retSize, int m, void *unk0, int unk1, int unk2, int unk3, int unk4);
+typedef int (*KDEC_HANDLER)(u32 *buf, int size, int *retSize, int m);
+typedef int (*MDEC_HANDLER)(u32 *tag, u8 *keys, u32 code, u32 *buf, int size, int *retSize, int m, void *unk0, int unk1, int unk2, int unk3, int unk4);
 
 /**
  * Sets the speed (only for kernel usage)
@@ -388,6 +388,6 @@ u32 sctrlKernelRand(void);
  *
  * @return 0 on success, < 0 on error
  */
-int sctrlGetRealEthernetAddress(uint8_t * mac);
+int sctrlGetRealEthernetAddress(uint8_t *mac);
 
 #endif

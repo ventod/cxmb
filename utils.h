@@ -48,51 +48,52 @@ enum PspFwVersion
 	FW_635 = 0x06030510,
 	FW_637 = 0x06030710,
 	FW_638 = 0x06030810,
-	FW_639 = 0x06030910,  
+	FW_639 = 0x06030910,
 	FW_660 = 0x06060010,
 	FW_661 = 0x06060110,
 };
 
-typedef struct tSceModule {
-	struct tSceModule	*next;
-	unsigned short		attribute;
-	unsigned char		version[2];
-	char				modname[27];
-	char				terminal;
-	unsigned int		unknown1;
-	unsigned int		unknown2;
-	int					modid;
-	unsigned int		unknown3[4];
-	void *				ent_top;
-	unsigned int		ent_size;
-	void *				stub_top;
-	unsigned int		stub_size;
-	unsigned int		unknown4[5];
-	unsigned int		entry_addr;
-	unsigned int		gp_value;
-	unsigned int		text_addr;
-	unsigned int		text_size;
-	unsigned int		data_size;
-	unsigned int		bss_size;
-	unsigned int		nsegment;
-	unsigned int		segmentaddr[4];
-	unsigned int		segmentsize[4];
+typedef struct tSceModule
+{
+	struct tSceModule *next;
+	unsigned short attribute;
+	unsigned char version[2];
+	char modname[27];
+	char terminal;
+	unsigned int unknown1;
+	unsigned int unknown2;
+	int modid;
+	unsigned int unknown3[4];
+	void *ent_top;
+	unsigned int ent_size;
+	void *stub_top;
+	unsigned int stub_size;
+	unsigned int unknown4[5];
+	unsigned int entry_addr;
+	unsigned int gp_value;
+	unsigned int text_addr;
+	unsigned int text_size;
+	unsigned int data_size;
+	unsigned int bss_size;
+	unsigned int nsegment;
+	unsigned int segmentaddr[4];
+	unsigned int segmentsize[4];
 } tSceModule;
 
-typedef int ( * StartModuleHandler )( tSceModule * );
+typedef int (*StartModuleHandler)(tSceModule *);
 
-extern StartModuleHandler ( * setStartModuleHandler )( StartModuleHandler );
+extern StartModuleHandler (*setStartModuleHandler)(StartModuleHandler);
 
-extern int ( * rebootPsp )( void );
+extern int (*rebootPsp)(void);
 
-extern const char * endwithistr( const char * str1, const char * str2 );
+extern const char *endwithistr(const char *str1, const char *str2);
 
-extern int cmpistr( const char * str1, const char * str2 );
+extern int cmpistr(const char *str1, const char *str2);
 
-extern int truncpath( char * str1, const char * str2 );
+extern int truncpath(char *str1, const char *str2);
 
-extern int readLine( int fd, char * buf, int max_len );
+extern int readLine(int fd, char *buf, int max_len);
 
-extern PspIoDrv * findDriver( char * drvname );
+extern PspIoDrv *findDriver(char *drvname);
 
-extern void initUtils( void );
+extern void initUtils(void);

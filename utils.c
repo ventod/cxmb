@@ -40,85 +40,85 @@
 #include "syspatch.h"
 #include "utils.h"
 
-const char * endwithistr( const char * str1, const char * str2 )
+const char *endwithistr(const char *str1, const char *str2)
 {
-	if ( !*str2 || strlen( str2 ) > strlen( str1 ) )
+	if (!*str2 || strlen(str2) > strlen(str1))
 	{
 		return NULL;
 	}
-	const char * ostr1, * ostr2;
-	for ( ostr1 = str1 + strlen( str1 ) - 1, ostr2 = str2 + strlen( str2 ) - 1; ostr1 >= str1 && ostr2 >= str2; ostr1 -- , ostr2 --)
+	const char *ostr1, *ostr2;
+	for (ostr1 = str1 + strlen(str1) - 1, ostr2 = str2 + strlen(str2) - 1; ostr1 >= str1 && ostr2 >= str2; ostr1--, ostr2--)
 	{
-		if ( tolower( *ostr1 ) != tolower( *ostr2 ) )
+		if (tolower(*ostr1) != tolower(*ostr2))
 		{
 			break;
 		}
 	}
-	if ( ostr2 == ( str2 - 1 ) )
+	if (ostr2 == (str2 - 1))
 	{
 		return ostr1 + 1;
 	}
 	return NULL;
 }
 
-int cmpistr( const char * str1, const char * str2 )
+int cmpistr(const char *str1, const char *str2)
 {
-	for( ; *str1 && *str2; str1 ++, str2 ++ )
+	for (; *str1 && *str2; str1++, str2++)
 	{
-		if ( tolower( *str1 ) != tolower( *str2 ) )
+		if (tolower(*str1) != tolower(*str2))
 			return 1;
 	}
-	if ( *str1 != *str2 )
+	if (*str1 != *str2)
 		return 1;
 	return 0;
 }
 
-int truncpath( char * str1, const char * str2 )
+int truncpath(char *str1, const char *str2)
 {
-	char * ostr = strstr( str1, str2 );
-	if ( ostr )
+	char *ostr = strstr(str1, str2);
+	if (ostr)
 	{
-		ostr[strlen( str2 )] = 0;
+		ostr[strlen(str2)] = 0;
 		return 1;
 	}
 	return -1;
 }
 
-int readLine( int fd, char * buf, int max_len )
+int readLine(int fd, char *buf, int max_len)
 {
- int i = 0, bytes = 0;
-  sceIoLseek( fd, 0, PSP_SEEK_SET );
-	while( i < max_len && ( bytes = sceIoRead( fd, buf + i, 1 ) ) == 1 )
+	int i = 0, bytes = 0;
+	sceIoLseek(fd, 0, PSP_SEEK_SET);
+	while (i < max_len && (bytes = sceIoRead(fd, buf + i, 1)) == 1)
 	{
-		if ( buf[i] == -1 || buf[i] == '\n' )
+		if (buf[i] == -1 || buf[i] == '\n')
 			break;
-		i ++;
+		i++;
 	}
 	buf[i] = 0;
-	if ( bytes != 1 && i == 0 )
+	if (bytes != 1 && i == 0)
 		return -1;
 	return i;
 }
 
-PspIoDrv * findDriver( char * drvname )
+PspIoDrv *findDriver(char *drvname)
 {
-	unsigned int * ( * getDevice )( char * ) = ( void * )getFindDriverAddr();
-	if ( !getDevice )
+	unsigned int *(*getDevice)(char *) = (void *)getFindDriverAddr();
+	if (!getDevice)
 		return NULL;
-	unsigned int * u;
-	u = getDevice( drvname );
-	if ( !u )
+	unsigned int *u;
+	u = getDevice(drvname);
+	if (!u)
 		return NULL;
-	log( "%s found!\nu0: %08x\nu1: %08x\nu2: %08x\nu3: %08x\n",
-		drvname, u[0], u[1], u[2], u[3] );
-	return ( PspIoDrv * )u[1];
+	log("%s found!\nu0: %08x\nu1: %08x\nu2: %08x\nu3: %08x\n",
+		drvname, u[0], u[1], u[2], u[3]);
+	return (PspIoDrv *)u[1];
 }
 
-StartModuleHandler ( * setStartModuleHandler )( StartModuleHandler );
-int ( * rebootPsp )( void );
+StartModuleHandler (*setStartModuleHandler)(StartModuleHandler);
+int (*rebootPsp)(void);
 
-void initUtils( void )
+void initUtils(void)
 {
-	setStartModuleHandler = (void*)sctrlHENFindFunction( "SystemControl", "SystemCtrlForKernel", 0x1C90BECB );
-	rebootPsp = (void*)sctrlHENFindFunction( "scePower_Service", "scePower", 0x0442D852 );
+	setStartModuleHandler = (void *)sctrlHENFindFunction("SystemControl", "SystemCtrlForKernel", 0x1C90BECB);
+	rebootPsp = (void *)sctrlHENFindFunction("scePower_Service", "scePower", 0x0442D852);
 }

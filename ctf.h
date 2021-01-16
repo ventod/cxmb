@@ -30,12 +30,13 @@
 
 #pragma once
 
-typedef struct CtfHeader {
+typedef struct CtfHeader
+{
 	char name[64];
 	unsigned int start;
 	unsigned int size;
 } __attribute__((packed)) CtfHeader;
 
 #if _CXMB_LITE == 0
-extern int makeCxmbThemeFile( unsigned int cxmb_magic, const char * cxmb_theme_file, const char * cxmb_drive );
+extern int makeCxmbThemeFile(unsigned int cxmb_magic, const char *cxmb_theme_file, const char *cxmb_drive);
 #endif

@@ -33,12 +33,13 @@
 #include <pspkernel.h>
 
 #if _DEBUG >= 1
-#define log(...)	while( log_running )\
-						sceKernelDelayThread( 50000 );\
-					sprintf( lstr, __VA_ARGS__ );\
-					printlog( lstr )
+#define log(...)                     \
+	while (log_running)              \
+		sceKernelDelayThread(50000); \
+	sprintf(lstr, __VA_ARGS__);      \
+	printlog(lstr)
 #else
-#define log(...)	;
+#define log(...) ;
 #endif
 
 #if _DEBUG >= 1
@@ -46,11 +47,11 @@ extern int log_running;
 
 extern char lstr[128];
 
-extern int printlog( const char * str );
+extern int printlog(const char *str);
 
-extern int printFileArg( PspIoDrvFileArg * arg );
+extern int printFileArg(PspIoDrvFileArg *arg);
 
-extern void dumpRange( const char * name, void * start, int len );
+extern void dumpRange(const char *name, void *start, int len);
 
 extern void dumpKmem();
 
