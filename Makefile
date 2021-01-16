@@ -27,7 +27,7 @@
 #Yoti mod for 3.71 - 6.61 CLASSIC & 6.61 INFINITY
  
 TARGET			= cxmb
-SRCS			= log.c syspatch.c utils.c ctf.c main.c
+SRCS			= log.c syspatch.c utils.c main.c
 OBJS			= $(SRCS:.c=.o)
 #DEBUG			= 1
 BUILD_PRX		= 1
@@ -50,12 +50,8 @@ ifeq ($(DEBUG),)
 DEBUG			= 0
 endif
 
-ifeq ($(CXMB_LITE),)
-CXMB_LITE		= 0
-endif
-
-CFLAGS			+= -D_DEBUG=$(DEBUG) -D_CXMB_LITE=$(CXMB_LITE)
-CXXFLAGS		+= -D_DEBUG=$(DEBUG) -D_CXMB_LITE=$(CXMB_LITE)
+CFLAGS			+= -D_DEBUG=$(DEBUG)
+CXXFLAGS		+= -D_DEBUG=$(DEBUG)
 
 PSPSDK			= $(shell psp-config --pspsdk-path)
 include $(PSPSDK)/lib/build.mak

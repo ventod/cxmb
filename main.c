@@ -42,7 +42,6 @@
 #include <systemctrl.h>
 
 #include "log.h"
-#include "ctf.h"
 #include "syspatch.h"
 #include "utils.h"
 
@@ -725,10 +724,6 @@ int install_cxmb(void)
 
 	sprintf(cxmb_theme_file, "%s:%s", ctf_drive, theme_file);
 	log("Theme file: %s\n", cxmb_theme_file);
-
-#if _CXMB_LITE == 0
-	makeCxmbThemeFile(cxmb_magic, cxmb_theme_file, cxmb_drive);
-#endif
 
 	if (!lflash_drv || (!fatms_drv && !fatef_drv))
 		return -1;
