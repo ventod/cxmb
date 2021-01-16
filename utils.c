@@ -32,7 +32,7 @@
 #include <pspsdk.h>
 #include <pspsysmem_kernel.h>
 #include <psploadcore.h>
-#include <systemctrl.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -114,11 +114,64 @@ PspIoDrv *findDriver(char *drvname)
 	return (PspIoDrv *)u[1];
 }
 
+unsigned int * findExport( const char * szMod, const char * szLib, unsigned int nid )
+{
+	SceLibraryEntryTable *entry;
+	tSceModule *pMod;
+	void *entTab;
+	int entLen;
+	pMod = ( tSceModule * )sceKernelFindModuleByName( szMod );
+	if ( !pMod )
+	{
+		return 0;
+	}
+	int i = 0;
+	entTab = pMod->ent_top;
+	entLen = pMod->ent_size;
+	while( i < entLen )
+	{
+		int count;
+		int total;
+		unsigned int *vars;
+
+		entry = ( SceLibraryEntryTable * )( entTab + i );
+
+		if( entry->libname && ( !szLib || !strcmp( entry->libname, szLib ) ) )
+		{
+			total = entry->stubcount + entry->vstubcount;
+			vars = entry->entrytable;
+
+			for( count = 0; count < entry->stubcount; count ++ )
+			{
+				if ( vars[count] == nid )
+				{
+					return &vars[count+total];	
+				}				
+			}
+		}
+
+		i += ( entry->len * 4 );
+	}
+	return NULL;
+}
+
+unsigned int findProc( const char * szMod, const char * szLib, unsigned int nid )
+{
+	unsigned int * export = findExport( szMod, szLib, nid );
+	if( export )
+	{
+		log( "func %08x in %s of %s found:\n%08x\n",
+			nid, szLib, szMod, *export );
+		return *export;
+	}
+	return 0;
+}
+
 StartModuleHandler (*setStartModuleHandler)(StartModuleHandler);
 int (*rebootPsp)(void);
 
 void initUtils(void)
 {
-	setStartModuleHandler = (void *)sctrlHENFindFunction("SystemControl", "SystemCtrlForKernel", 0x1C90BECB);
-	rebootPsp = (void *)sctrlHENFindFunction("scePower_Service", "scePower", 0x0442D852);
+	setStartModuleHandler = (void *)findProc("SystemControl", "SystemCtrlForKernel", 0x1C90BECB);
+	rebootPsp = (void *)findProc("scePower_Service", "scePower", 0x0442D852);
 }

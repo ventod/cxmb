@@ -37,12 +37,10 @@ PSP_FW_VERSION	= 371
 
 PRX_EXPORTS		= exports.exp
 
-INCDIR			= inc_lib
-LIBDIR			= inc_lib
 
 LDFLAGS			= -nostartfiles
-LIBS			= -lpspsystemctrl_kernel
-CFLAGS			= -Os -G0 -Wall -fno-strict-aliasing -fno-builtin-printf
+
+CFLAGS			= -Os -G0 -Wall -Wextra -fno-strict-aliasing -fno-builtin-printf
 CXXFLAGS		= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS			= $(CFLAGS)
 

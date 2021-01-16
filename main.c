@@ -39,8 +39,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <systemctrl.h>
-
 #include "log.h"
 #include "syspatch.h"
 #include "utils.h"
@@ -48,6 +46,7 @@
 PSP_MODULE_INFO("cxmb", 0x1000, 1, 2);
 PSP_MAIN_THREAD_ATTR(0);
 
+#define UNUSED __attribute__((unused))
 #define CXMB_DEFAULT_THEME "/PSP/THEME/Default.ctf"
 
 typedef struct CtfHandler
@@ -71,16 +70,16 @@ static unsigned int handler_count = 0;
 static CtfHeader *ctf_header = NULL;
 static CtfHandler *ctf_handler = NULL;
 static int mem_id = -1, sema = -1;
-static PspIoDrv *lflash_drv;
-static PspIoDrv *fatms_drv;
-static PspIoDrv *fatef_drv;
+static PspIoDrv *lflash_drv = NULL;
+static PspIoDrv *fatms_drv = NULL;
+static PspIoDrv *fatef_drv = NULL;
 static PspIoDrvArg *ms_drv = NULL;
 static char selected_theme_file[64];
 static void *t_record = NULL;
-static char cxmb_theme_file[64]; //"ms0:/PSP/THEME/Default.ctf"
-static char theme_file[64];		 //"/PSP/THEME/Default.ctf"
-static char cxmb_conf_file[64];	 //"ms0:/seplugins/cxmb/conf.txt"
-static char cxmb_drive[3];
+static char cxmb_theme_file[72]; // 64 + 8 (to silence sprintf warnings with 64)
+static char theme_file[64];
+static char cxmb_conf_file[64];
+static char cxmb_drive[4];
 static char ctf_drive[4];
 static int isGO;
 
@@ -90,7 +89,7 @@ static int inCtf(const char *file)
 {
 	if (!ctf_header)
 		return -1;
-	int i;
+	unsigned int i;
 	for (i = 0; i < header_size; i++)
 	{
 		if (!cmpistr(file, ctf_header[i].name))
@@ -103,7 +102,7 @@ static int isRedirected(PspIoDrvFileArg *arg)
 {
 	if (!ctf_handler)
 		return -1;
-	int i;
+	unsigned int i;
 	for (i = 0; i < handler_count; i++)
 	{
 		if (arg->arg == ctf_handler[i].arg)
@@ -114,7 +113,6 @@ static int isRedirected(PspIoDrvFileArg *arg)
 
 void uninstall_cxmb()
 {
-	//free the cxmb heap
 	sceKernelFreeHeapMemory(mem_id, ctf_handler);
 	sceKernelFreeHeapMemory(mem_id, ctf_header);
 	sceKernelDeleteHeap(mem_id);
@@ -451,9 +449,9 @@ int IoIoctl_new(PspIoDrvFileArg *arg, unsigned int cmd, void *indata, int inlen,
 		arg->drv = ms_drv;
 		int ret = fatms_drv->funcs->IoIoctl(arg, cmd, indata, inlen, outdata, outlen);
 
-		if (ret < 0)
+		if (ret < 0) {
 			log("error: %08x when ioctl cmd %08x %s\n", ret, cmd, ctf_header[ctf_handler[num].num].name);
-
+		}
 		arg->drv = drv;
 		return ret;
 	}
@@ -484,7 +482,7 @@ int IoClose_new(PspIoDrvFileArg *arg)
 		}
 		else
 		{
-			char stmp[4];
+			char stmp[5];
 			sceIoWrite(fd, selected_theme_file, strlen(selected_theme_file));
 			log("patpat:ctf_drive:%s selected_theme_file:%s\n", ctf_drive, selected_theme_file);
 			sprintf(stmp, "\n%s", ctf_drive);
@@ -530,7 +528,7 @@ int parseDiff(const char *file, tSceModule *mod)
 	log("patch %s!\nstart: %08x\nsize: %08x\n", file, ctf_header[off].start, ctf_header[off].size);
 
 	unsigned int attr[2];
-	int i = 0;
+	unsigned int i = 0;
 	while (i < ctf_header[off].size)
 	{
 		sceIoRead(ctf, attr, 8);
@@ -593,9 +591,7 @@ int install_cxmb(void)
 	int fw = initPatches();
 	if (fw == FW_550)
 	{
-		fatms_drv = sctrlHENFindDriver("fatms");
-		fatef_drv = sctrlHENFindDriver("fatef");
-		lflash_drv = sctrlHENFindDriver("flashfat");
+		return -1;
 	}
 	else
 	{
@@ -785,7 +781,7 @@ int install_cxmb(void)
 	return 0;
 }
 
-int main_thread(SceSize args, void *argp)
+int main_thread(SceSize args UNUSED, void *argp UNUSED)
 {
 	sema = sceKernelCreateSema("cxmb_reboot", 0, 0, 1, NULL);
 	sceKernelWaitSemaCB(sema, 1, NULL);
@@ -804,7 +800,7 @@ int main_thread(SceSize args, void *argp)
 	return 0;
 }
 
-int module_start(SceSize args, void *argp)
+int module_start(SceSize args UNUSED, void *argp UNUSED)
 {
 	log("CXMB debug Version: 3.71 - 6.61 Classic & 6.61 Infinity R2\n");
 	int fw = initPatches();
@@ -824,7 +820,7 @@ int module_start(SceSize args, void *argp)
 	return 0;
 }
 
-int module_stop(SceSize args, void *argp)
+int module_stop(SceSize args UNUSED, void *argp UNUSED)
 {
 	return 0;
 }

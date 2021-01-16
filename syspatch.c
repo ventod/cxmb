@@ -35,20 +35,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <systemctrl.h>
+
 #include "utils.h"
 #include "syspatch.h"
 
-int fw_version = FW_371;
-
-int (*getDevkitVersion)(void);
+int fw_version = FW_661;
 
 int initPatches(void)
 {
-	getDevkitVersion = (void *)sctrlHENFindFunction("sceSystemMemoryManager", "SysMemUserForUser", 0x3FC9AE6A);
-	fw_version = getDevkitVersion();
-
-	return fw_version;
+	return FW_661;
 }
 
 unsigned int getMagic(void)
