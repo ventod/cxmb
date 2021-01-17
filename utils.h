@@ -33,26 +33,6 @@
 #include <pspkernel.h>
 #include <psploadexec_kernel.h>
 
-enum PspFwVersion
-{
-	FW_371 = 0x03070110,
-	FW_380 = 0x03080010,
-	FW_390 = 0x03090010,
-	FW_401 = 0x04000110,
-	FW_500 = 0x05000010,
-	FW_502 = 0x05000210,
-	FW_503 = 0x05000310,
-	FW_550 = 0x05050010,
-	FW_620 = 0x06020010,
-	FW_631 = 0x06030110,
-	FW_635 = 0x06030510,
-	FW_637 = 0x06030710,
-	FW_638 = 0x06030810,
-	FW_639 = 0x06030910,
-	FW_660 = 0x06060010,
-	FW_661 = 0x06060110,
-};
-
 typedef struct tSceModule
 {
 	struct tSceModule *next;
