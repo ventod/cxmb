@@ -114,54 +114,54 @@ PspIoDrv *findDriver(char *drvname)
 	return (PspIoDrv *)u[1];
 }
 
-unsigned int * findExport( const char * szMod, const char * szLib, unsigned int nid )
+unsigned int *findExport(const char *szMod, const char *szLib, unsigned int nid)
 {
 	SceLibraryEntryTable *entry;
 	tSceModule *pMod;
 	void *entTab;
 	int entLen;
-	pMod = ( tSceModule * )sceKernelFindModuleByName( szMod );
-	if ( !pMod )
+	pMod = (tSceModule *)sceKernelFindModuleByName(szMod);
+	if (!pMod)
 	{
 		return 0;
 	}
 	int i = 0;
 	entTab = pMod->ent_top;
 	entLen = pMod->ent_size;
-	while( i < entLen )
+	while (i < entLen)
 	{
 		int count;
 		int total;
 		unsigned int *vars;
 
-		entry = ( SceLibraryEntryTable * )( entTab + i );
+		entry = (SceLibraryEntryTable *)(entTab + i);
 
-		if( entry->libname && ( !szLib || !strcmp( entry->libname, szLib ) ) )
+		if (entry->libname && (!szLib || !strcmp(entry->libname, szLib)))
 		{
 			total = entry->stubcount + entry->vstubcount;
 			vars = entry->entrytable;
 
-			for( count = 0; count < entry->stubcount; count ++ )
+			for (count = 0; count < entry->stubcount; count++)
 			{
-				if ( vars[count] == nid )
+				if (vars[count] == nid)
 				{
-					return &vars[count+total];	
-				}				
+					return &vars[count + total];
+				}
 			}
 		}
 
-		i += ( entry->len * 4 );
+		i += (entry->len * 4);
 	}
 	return NULL;
 }
 
-unsigned int findProc( const char * szMod, const char * szLib, unsigned int nid )
+unsigned int findProc(const char *szMod, const char *szLib, unsigned int nid)
 {
-	unsigned int * export = findExport( szMod, szLib, nid );
-	if( export )
+	unsigned int *export = findExport(szMod, szLib, nid);
+	if (export)
 	{
-		log( "func %08x in %s of %s found:\n%08x\n",
-			nid, szLib, szMod, *export );
+		log("func %08x in %s of %s found:\n%08x\n",
+			nid, szLib, szMod, *export);
 		return *export;
 	}
 	return 0;
