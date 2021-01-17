@@ -39,6 +39,8 @@
 #include "log.h"
 #include "utils.h"
 
+#define DRIVER_OFFSET 0x00002A4C
+
 const char *endwithistr(const char *str1, const char *str2)
 {
 	if (!*str2 || strlen(str2) > strlen(str1))
@@ -102,7 +104,7 @@ int readLine(int fd, char *buf, int max_len)
 unsigned int getFindDriverAddr(void)
 {
 	tSceModule *pMod = (tSceModule *)sceKernelFindModuleByName("sceIOFileManager");
-	return pMod ? pMod->text_addr + 0x00002A4C : 0;
+	return pMod ? pMod->text_addr + DRIVER_OFFSET : 0;
 }
 
 PspIoDrv *findDriver(char *drvname)

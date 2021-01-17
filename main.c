@@ -154,7 +154,8 @@ int msIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 		{
 			sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 			sceIoRead(fd, &magic, 4);
-			if (magic != CXMB_MAGIC_661 && magic != CXMB_MAGIC_660) {
+			if (magic != CXMB_MAGIC_661 && magic != CXMB_MAGIC_660)
+			{
 				log("%s version not match!\n", selected_theme_file);
 				ret = -1;
 			}
@@ -209,7 +210,8 @@ int efIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 		{
 			sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 			sceIoRead(fd, &magic, 4);
-			if (magic != CXMB_MAGIC_661 && magic != CXMB_MAGIC_660) {
+			if (magic != CXMB_MAGIC_661 && magic != CXMB_MAGIC_660)
+			{
 				log("%s version not match!\n", selected_theme_file);
 				ret = -1;
 			}
