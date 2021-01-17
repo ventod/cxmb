@@ -27,7 +27,7 @@
 #Yoti mod for 3.71 - 6.61 CLASSIC & 6.61 INFINITY
  
 TARGET			= cxmb
-SRCS			= log.c syspatch.c utils.c main.c
+SRCS			= log.c utils.c main.c
 OBJS			= $(SRCS:.c=.o)
 #DEBUG			= 1
 BUILD_PRX		= 1

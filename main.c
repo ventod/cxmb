@@ -40,7 +40,6 @@
 #include <string.h>
 
 #include "log.h"
-#include "syspatch.h"
 #include "utils.h"
 
 #define CXMB_MAGIC_661 0xDEAD0661

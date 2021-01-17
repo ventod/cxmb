@@ -37,7 +37,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "log.h"
-#include "syspatch.h"
 #include "utils.h"
 
 const char *endwithistr(const char *str1, const char *str2)
@@ -98,6 +97,12 @@ int readLine(int fd, char *buf, int max_len)
 	if (bytes != 1 && i == 0)
 		return -1;
 	return i;
+}
+
+unsigned int getFindDriverAddr(void)
+{
+	tSceModule *pMod = (tSceModule *)sceKernelFindModuleByName("sceIOFileManager");
+	return pMod ? pMod->text_addr + 0x00002A4C : 0;
 }
 
 PspIoDrv *findDriver(char *drvname)
