@@ -33,5 +33,3 @@
 extern int fw_version;
 
 extern unsigned int getFindDriverAddr(void);
-
-extern unsigned int getSysconfOffset(void);

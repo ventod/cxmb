@@ -46,8 +46,3 @@ unsigned int getFindDriverAddr(void)
 	tSceModule *pMod = (tSceModule *)sceKernelFindModuleByName("sceIOFileManager");
 	return pMod ? pMod->text_addr + 0x00002A4C : 0;
 }
-
-unsigned int getSysconfOffset(void)
-{
-	return 0x0002CB84;
-}

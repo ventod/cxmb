@@ -44,6 +44,7 @@
 #include "utils.h"
 
 #define CXMB_MAGIC 0xDEAD0661
+#define SYSCONF_OFFSET 0x0002CB84
 
 PSP_MODULE_INFO("cxmb", 0x1000, 1, 2);
 PSP_MAIN_THREAD_ATTR(0);
@@ -562,21 +563,9 @@ int OnModuleStart(tSceModule *mod)
 	}
 	else if (strcmp(mod->modname, "sysconf_plugin_module") == 0)
 	{
-		unsigned int offset = getSysconfOffset();
-		if (fw_version == FW_500 || fw_version == FW_502 || fw_version == FW_503 || fw_version == FW_550 || fw_version == FW_620 || fw_version == FW_631 || fw_version == FW_635 || fw_version == FW_637 || fw_version == FW_638 || fw_version == FW_639 || fw_version == FW_660 || fw_version == FW_661)
-		{
-			unsigned int addr = mod->text_addr + offset;
-			char *sfx = (char *)addr;
-			sfx[0] = 'C';
-		}
-		else
-		{
-			unsigned int h_addr = _lw(mod->text_addr + offset);
-			unsigned int l_addr = _lw(mod->text_addr + offset + 0xC);
-			unsigned int addr = ((h_addr & 0xFFFF) << 16) | (l_addr & 0xFFFF);
-			char *sfx = "CTF";
-			_sw(*(unsigned int *)sfx, addr);
-		}
+		unsigned int addr = mod->text_addr + SYSCONF_OFFSET;
+		char *sfx = (char *)addr;
+		sfx[0] = 'C';
 		sceKernelIcacheInvalidateAll();
 		sceKernelDcacheWritebackInvalidateAll();
 		log("patched sysconf\n");
