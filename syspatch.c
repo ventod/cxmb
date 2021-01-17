@@ -39,8 +39,6 @@
 #include "utils.h"
 #include "syspatch.h"
 
-int fw_version = FW_661;
-
 unsigned int getFindDriverAddr(void)
 {
 	tSceModule *pMod = (tSceModule *)sceKernelFindModuleByName("sceIOFileManager");

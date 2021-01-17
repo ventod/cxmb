@@ -30,6 +30,4 @@
 
 #pragma once
 
-extern int fw_version;
-
 extern unsigned int getFindDriverAddr(void);

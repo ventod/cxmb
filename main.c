@@ -43,7 +43,8 @@
 #include "syspatch.h"
 #include "utils.h"
 
-#define CXMB_MAGIC 0xDEAD0661
+#define CXMB_MAGIC_661 0xDEAD0661
+#define CXMB_MAGIC_660 0xDEAD0660
 #define SYSCONF_OFFSET 0x0002CB84
 
 PSP_MODULE_INFO("cxmb", 0x1000, 1, 2);
@@ -154,18 +155,9 @@ int msIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 		{
 			sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 			sceIoRead(fd, &magic, 4);
-			if (magic != CXMB_MAGIC)
-			{
-				int fw = FW_661;
-				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))))
-				{
-					log("%s version not match!\n", selected_theme_file);
-					ret = -1;
-				}
-				else
-				{
-					ret = msIoGetstat(arg, file, stat);
-				}
+			if (magic != CXMB_MAGIC_661 && magic != CXMB_MAGIC_660) {
+				log("%s version not match!\n", selected_theme_file);
+				ret = -1;
 			}
 			sceIoLseek(fd, 0x1C, PSP_SEEK_SET);
 			sceIoRead(fd, &size, 4);
@@ -218,18 +210,9 @@ int efIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 		{
 			sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 			sceIoRead(fd, &magic, 4);
-			if (magic != CXMB_MAGIC)
-			{
-				int fw = FW_661;
-				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))))
-				{
-					log("%s version not match!\n", selected_theme_file);
-					ret = -1;
-				}
-				else
-				{
-					ret = msIoGetstat(arg, file, stat);
-				}
+			if (magic != CXMB_MAGIC_661 && magic != CXMB_MAGIC_660) {
+				log("%s version not match!\n", selected_theme_file);
+				ret = -1;
 			}
 			sceIoLseek(fd, 0x1C, PSP_SEEK_SET);
 			sceIoRead(fd, &size, 4);
@@ -451,7 +434,8 @@ int IoIoctl_new(PspIoDrvFileArg *arg, unsigned int cmd, void *indata, int inlen,
 		arg->drv = ms_drv;
 		int ret = fatms_drv->funcs->IoIoctl(arg, cmd, indata, inlen, outdata, outlen);
 
-		if (ret < 0) {
+		if (ret < 0)
+		{
 			log("error: %08x when ioctl cmd %08x %s\n", ret, cmd, ctf_header[ctf_handler[num].num].name);
 		}
 		arg->drv = drv;
@@ -737,15 +721,11 @@ int install_cxmb(void)
 	unsigned int magic;
 	sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 	sceIoRead(fd, &magic, 4);
-	if (magic != CXMB_MAGIC)
+	if (magic != CXMB_MAGIC_661 && magic != CXMB_MAGIC_660)
 	{
-		int fw = FW_661;
-		if (((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661)))
-		{
-			log("magic not match!\n");
-			sceIoClose(fd);
-			return -1;
-		}
+		log("magic not match!\n");
+		sceIoClose(fd);
+		return -1;
 	}
 	sceIoRead(fd, &ctf_sig, 4);
 	sceIoRead(fd, &header_size, 4);
