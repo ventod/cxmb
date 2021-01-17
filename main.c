@@ -43,6 +43,8 @@
 #include "syspatch.h"
 #include "utils.h"
 
+#define CXMB_MAGIC 0xDEAD0661
+
 PSP_MODULE_INFO("cxmb", 0x1000, 1, 2);
 PSP_MAIN_THREAD_ATTR(0);
 
@@ -63,7 +65,6 @@ typedef struct CtfHeader
 	unsigned int size;
 } __attribute__((packed)) CtfHeader;
 
-static unsigned int cxmb_magic;
 static unsigned int ctf_sig = 0;
 static unsigned int header_size = 0;
 static unsigned int handler_count = 0;
@@ -152,9 +153,9 @@ int msIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 		{
 			sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 			sceIoRead(fd, &magic, 4);
-			if (magic != cxmb_magic)
+			if (magic != CXMB_MAGIC)
 			{
-				int fw = initPatches();
+				int fw = FW_661;
 				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))))
 				{
 					log("%s version not match!\n", selected_theme_file);
@@ -216,9 +217,9 @@ int efIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 		{
 			sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 			sceIoRead(fd, &magic, 4);
-			if (magic != cxmb_magic)
+			if (magic != CXMB_MAGIC)
 			{
-				int fw = initPatches();
+				int fw = FW_661;
 				if ((((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661))))
 				{
 					log("%s version not match!\n", selected_theme_file);
@@ -588,17 +589,11 @@ int OnModuleStart(tSceModule *mod)
 int install_cxmb(void)
 {
 	log("Going to install cxmb!\n");
-	int fw = initPatches();
-	if (fw == FW_550)
-	{
-		return -1;
-	}
-	else
-	{
-		fatms_drv = findDriver("fatms");
-		fatef_drv = findDriver("fatef");
-		lflash_drv = findDriver("flashfat");
-	}
+
+	fatms_drv = findDriver("fatms");
+	fatef_drv = findDriver("fatef");
+	lflash_drv = findDriver("flashfat");
+
 	if (!fatef_drv)
 	{
 		isGO = -1;
@@ -753,9 +748,9 @@ int install_cxmb(void)
 	unsigned int magic;
 	sceIoLseek(fd, 0x10, PSP_SEEK_SET);
 	sceIoRead(fd, &magic, 4);
-	if (magic != cxmb_magic)
+	if (magic != CXMB_MAGIC)
 	{
-		int fw = initPatches();
+		int fw = FW_661;
 		if (((fw != FW_500 && fw != FW_502 && fw != FW_503) || (magic != 0xDEAD0500 && magic != 0xDEAD0502 && magic != 0xDEAD0503)) && ((fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639) || (magic != 0xDEAD0635 && magic != 0xDEAD0637 && magic != 0xDEAD0638 && magic != 0xDEAD0639)) && ((fw != FW_660 && fw != FW_661) || (magic != 0xDEAD0660 && magic != 0xDEAD0661)))
 		{
 			log("magic not match!\n");
@@ -785,33 +780,15 @@ int main_thread(SceSize args UNUSED, void *argp UNUSED)
 {
 	sema = sceKernelCreateSema("cxmb_reboot", 0, 0, 1, NULL);
 	sceKernelWaitSemaCB(sema, 1, NULL);
-	int fw = initPatches();
-	if (fw == FW_502 || fw == FW_503 || fw == FW_620 || fw == FW_631 || fw == FW_635 || fw == FW_637 || fw == FW_638 || fw == FW_639 || fw == FW_660 || fw == FW_661)
-		sceKernelDelayThread(3650000);
-	else
-		sceKernelDelayThread(2500000);
-
-	log("reboot!\n");
-	if (fw != FW_502 && fw != FW_503 && fw != FW_620 && fw != FW_631 && fw != FW_635 && fw != FW_637 && fw != FW_638 && fw != FW_639 && fw != FW_660 && fw != FW_661)
-		rebootPsp();
-	else
-		sceKernelExitVSHKernel(NULL);
-
+	sceKernelDelayThread(3650000);
+	rebootPsp();
 	return 0;
 }
 
 int module_start(SceSize args UNUSED, void *argp UNUSED)
 {
-	log("CXMB debug Version: 3.71 - 6.61 Classic & 6.61 Infinity R2\n");
-	int fw = initPatches();
+	log("CXMB debug Version: 6.61 Classic & 6.61 Infinity R2\n");
 	sceIoAssign("ms0:", "msstor0p1:", "fatms0:", IOASSIGN_RDWR, NULL, 0);
-	log("Firmware Version: %08x\n", fw);
-	cxmb_magic = getMagic();
-	if (cxmb_magic == 0)
-	{
-		log("Not supported firmware version!\n");
-	}
-	log("CXMB Magic: %08x\n", cxmb_magic);
 	initUtils();
 	install_cxmb();
 	int thid = sceKernelCreateThread("cxmb_thread", main_thread, 47, 0x400, 0x00100001, NULL);
