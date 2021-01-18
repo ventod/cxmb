@@ -685,16 +685,22 @@ int install_cxmb(void)
 	sceKernelIcacheInvalidateAll();
 	sceKernelDcacheWritebackInvalidateAll();
 	log("redirected io_driver!\n");
+
+	int dummy;
 	if (strcmp(ctf_drive, "ef0") == 0)
 	{
-		sceIoOpen("ef0:/dummy.prx", PSP_O_RDONLY, 0644);
+		dummy = sceIoOpen("ef0:/dummy.prx", PSP_O_RDONLY, 0644);
 		log("ef_drv_arg: %08x\n", (unsigned int)ms_drv);
 	}
 	else
 	{
-		sceIoOpen("ms0:/dummy.prx", PSP_O_RDONLY, 0644);
+		dummy = sceIoOpen("ms0:/dummy.prx", PSP_O_RDONLY, 0644);
 		log("ms_drv_arg: %08x\n", (unsigned int)ms_drv);
 	}
+	// just in case that someone has a file like this
+    if (dummy >= 0) {
+        sceIoClose(dummy);
+    }
 
 	previous = setStartModuleHandler(OnModuleStart);
 	log("startModuleHandler setup!\n");
