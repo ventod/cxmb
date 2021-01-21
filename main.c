@@ -83,32 +83,43 @@ static char theme_file[64];
 static char cxmb_conf_file[64];
 static char cxmb_drive[4];
 static char ctf_drive[4];
-static int isGO;
+static int isGO = 0;
 
 StartModuleHandler previous = NULL;
 
+static void preLowerCtfNames()
+{
+	for (unsigned int i = 0; i < header_size; i++)
+	{
+		for (char *str = ctf_header[i].name; *str; ++str)
+		{
+			*str = tolower(*str);
+		}
+	}
+}
+
 static int inCtf(const char *file)
 {
-	if (!ctf_header)
-		return -1;
-	unsigned int i;
-	for (i = 0; i < header_size; i++)
+	if (ctf_header)
 	{
-		if (!cmpistr(file, ctf_header[i].name))
-			return i;
+		for (unsigned int i = 0; i < header_size; ++i)
+		{
+			if (!cmpistr(file, ctf_header[i].name))
+				return i;
+		}
 	}
 	return -1;
 }
 
 static int isRedirected(PspIoDrvFileArg *arg)
 {
-	if (!ctf_handler)
-		return -1;
-	unsigned int i;
-	for (i = 0; i < handler_count; i++)
+	if (ctf_handler)
 	{
-		if (arg->arg == ctf_handler[i].arg)
-			return i;
+		for (unsigned int i = 0; i < handler_count; ++i)
+		{
+			if (arg->arg == ctf_handler[i].arg)
+				return i;
+		}
 	}
 	return -1;
 }
@@ -120,6 +131,8 @@ void uninstall_cxmb()
 	sceKernelDeleteHeap(mem_id);
 	ctf_handler = NULL;
 	ctf_header = NULL;
+	handler_count = 0;
+	header_size = 0;
 }
 
 int (*msIoOpen)(PspIoDrvFileArg *arg, char *file, int flags, SceMode mode);
@@ -688,14 +701,16 @@ int install_cxmb(void)
 
 	int dummy = sceIoOpen("ms0:/dummy.prx", PSP_O_RDONLY, 0644);
 	log("ms_drv_arg: %08x\n", (unsigned int)ms_drv);
-    if (dummy >= 0) {
-        sceIoClose(dummy); 	// just in case that someone has a file like this
-    }
+	if (dummy >= 0)
+	{
+		sceIoClose(dummy); // just in case that someone has a file like this
+	}
 	if (isGO)
 	{
 		dummy = sceIoOpen("ef0:/dummy.prx", PSP_O_RDONLY, 0644);
 		log("ef_drv_arg: %08x\n", (unsigned int)ms_drv);
-		if (dummy >= 0) {
+		if (dummy >= 0)
+		{
 			sceIoClose(dummy); // just in case that someone has a file like this
 		}
 	}
@@ -741,6 +756,8 @@ int install_cxmb(void)
 	sceIoLseek(fd, offset, PSP_SEEK_END);
 	sceIoRead(fd, ctf_header, sizeof(CtfHeader) * header_size);
 	sceIoClose(fd);
+
+	preLowerCtfNames();
 
 	log("read ctf_header!\n");
 
