@@ -66,7 +66,7 @@ extern StartModuleHandler (*setStartModuleHandler)(StartModuleHandler);
 
 extern int (*rebootPsp)(void);
 
-extern const char *endwithistr(const char *str1, const char *str2);
+extern int isCtfFile(const char *str);
 
 extern int cmpistr(const char *str1, const char *str2);
 

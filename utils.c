@@ -41,25 +41,20 @@
 
 #define DRIVER_OFFSET 0x00002A4C
 
-const char *endwithistr(const char *str1, const char *str2)
+int isCtfFile(const char *str)
 {
-	if (!*str2 || strlen(str2) > strlen(str1))
+	if (str)
 	{
-		return NULL;
-	}
-	const char *ostr1, *ostr2;
-	for (ostr1 = str1 + strlen(str1) - 1, ostr2 = str2 + strlen(str2) - 1; ostr1 >= str1 && ostr2 >= str2; ostr1--, ostr2--)
-	{
-		if (tolower(*ostr1) != tolower(*ostr2))
-		{
-			break;
+		int len = strlen(str);
+		if (len > 4) {
+			return
+				str[len - 4] == '.' &&
+				str[len - 3] == 'c' &&
+				str[len - 2] == 't' &&
+				str[len - 1] == 'f';
 		}
 	}
-	if (ostr2 == (str2 - 1))
-	{
-		return ostr1 + 1;
-	}
-	return NULL;
+	return 0;
 }
 
 int cmpistr(const char *str1, const char *str2)

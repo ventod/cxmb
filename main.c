@@ -136,7 +136,7 @@ int msIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 	log("patpat:msIoGetstat_new %s.%d.\n", arg->drv->drv->name, arg->fs_num);
 	int ret = 0;
 	unsigned int magic;
-	if (endwithistr(file, ".ctf"))
+	if (isCtfFile(file))
 	{
 		int size = 0;
 		if (strcmp(arg->drv->drv->name, "fatms") == 0)
@@ -192,7 +192,7 @@ int efIoGetstat_new(PspIoDrvFileArg *arg, const char *file, SceIoStat *stat)
 	log("patpat:efIoGetstat_new %s.%d.\n", arg->drv->drv->name, arg->fs_num);
 	int ret = 0;
 	unsigned int magic;
-	if (endwithistr(file, ".ctf"))
+	if (isCtfFile(file))
 	{
 		int size = 0;
 		if (strcmp(arg->drv->drv->name, "fatms") == 0)
@@ -686,21 +686,19 @@ int install_cxmb(void)
 	sceKernelDcacheWritebackInvalidateAll();
 	log("redirected io_driver!\n");
 
-	int dummy;
-	if (strcmp(ctf_drive, "ef0") == 0)
+	int dummy = sceIoOpen("ms0:/dummy.prx", PSP_O_RDONLY, 0644);
+	log("ms_drv_arg: %08x\n", (unsigned int)ms_drv);
+    if (dummy >= 0) {
+        sceIoClose(dummy); 	// just in case that someone has a file like this
+    }
+	if (isGO)
 	{
 		dummy = sceIoOpen("ef0:/dummy.prx", PSP_O_RDONLY, 0644);
 		log("ef_drv_arg: %08x\n", (unsigned int)ms_drv);
+		if (dummy >= 0) {
+			sceIoClose(dummy); // just in case that someone has a file like this
+		}
 	}
-	else
-	{
-		dummy = sceIoOpen("ms0:/dummy.prx", PSP_O_RDONLY, 0644);
-		log("ms_drv_arg: %08x\n", (unsigned int)ms_drv);
-	}
-	// just in case that someone has a file like this
-    if (dummy >= 0) {
-        sceIoClose(dummy);
-    }
 
 	previous = setStartModuleHandler(OnModuleStart);
 	log("startModuleHandler setup!\n");
