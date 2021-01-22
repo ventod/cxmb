@@ -69,6 +69,14 @@ int cmpistr(const char *str1, const char *str2)
 	return 0;
 }
 
+void tolowerstr(char *str)
+{
+	for (; *str; ++str)
+	{
+		*str = tolower(*str);
+	}
+}
+
 int truncpath(char *str1, const char *str2)
 {
 	char *ostr = strstr(str1, str2);

@@ -84,19 +84,7 @@ static char cxmb_conf_file[64];
 static char cxmb_drive[4];
 static char ctf_drive[4];
 static int isGO = 0;
-
 StartModuleHandler previous = NULL;
-
-static void preLowerCtfNames()
-{
-	for (unsigned int i = 0; i < header_size; i++)
-	{
-		for (char *str = ctf_header[i].name; *str; ++str)
-		{
-			*str = tolower(*str);
-		}
-	}
-}
 
 static int inCtf(const char *file)
 {
@@ -126,13 +114,18 @@ static int isRedirected(PspIoDrvFileArg *arg)
 
 void uninstall_cxmb()
 {
-	sceKernelFreeHeapMemory(mem_id, ctf_handler);
-	sceKernelFreeHeapMemory(mem_id, ctf_header);
-	sceKernelDeleteHeap(mem_id);
+	if (mem_id) {
+		if (ctf_handler)
+			sceKernelFreeHeapMemory(mem_id, ctf_handler);
+		if (ctf_header)
+			sceKernelFreeHeapMemory(mem_id, ctf_header);
+		sceKernelDeleteHeap(mem_id);
+	}
 	ctf_handler = NULL;
 	ctf_header = NULL;
 	handler_count = 0;
 	header_size = 0;
+	mem_id = -1;
 }
 
 int (*msIoOpen)(PspIoDrvFileArg *arg, char *file, int flags, SceMode mode);
@@ -757,7 +750,10 @@ int install_cxmb(void)
 	sceIoRead(fd, ctf_header, sizeof(CtfHeader) * header_size);
 	sceIoClose(fd);
 
-	preLowerCtfNames();
+	for (unsigned int i = 0; i < header_size; i++)
+	{
+		tolowerstr(ctf_header[i].name);
+	}
 
 	log("read ctf_header!\n");
 

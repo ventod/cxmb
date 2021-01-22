@@ -70,6 +70,8 @@ extern int isCtfFile(const char *str);
 
 extern int cmpistr(const char *str1, const char *str2);
 
+extern void tolowerstr(char *str);
+
 extern int truncpath(char *str1, const char *str2);
 
 extern int readLine(int fd, char *buf, int max_len);
